@@ -92,24 +92,6 @@ class Lecturer(Mentor, MathMethods, CompareTwoPeople):
         return (f'Имя: {self.name}\nФамилия: {self.surname}\n'
                 f'Средняя оценка за лекции: {self.average_value}')
 
-    # def compare(self, second):
-    #     lector_info = [
-    #         f'{self.name} {self.surname}',
-    #         f'{second.name} {second.surname}',
-    #         self.average_value,
-    #         second.average_value
-    #     ]
-    #     if lector_info[2] > lector_info[3]:
-    #         text = f'— результативнее {lector_info[1]}. Его средняя оценка за лекции составляет:'
-    #         return f'Лектор {lector_info[0]} {text} {lector_info[2]}'
-    #     elif lector_info[2] < lector_info[3]:
-    #         text = f'— результативнее {lector_info[0]}. Его средняя оценка за лекции составляет:'
-    #         return f'Лектор {lector_info[1]} {text} {lector_info[3]}'
-    #     else:
-    #         text = (f'{lector_info[0]} и {lector_info[1]} одинаково результативны. Их балл '
-    #                 f'составляет: {lector_info[3]}')
-    #         return f'Лекторы {text}'
-
 
 # Reviewers class
 class Reviewer(Mentor):
@@ -139,8 +121,10 @@ sergey_makarov.courses_in_progress += ['Git', 'Python']
 
 # Reviewers
 maxim_reviewer = Reviewer('Максим', 'Романов', 'Мужчина')
+garik_reviewer = Reviewer('Гарик', 'Добрый', 'Мужчина')
 # Reviewers / Courses in progress
-maxim_reviewer.courses_attached += ['Основы Python', 'Git', 'Python']
+maxim_reviewer.courses_attached += ['Python']
+garik_reviewer.courses_attached += ['Git']
 
 # Lecturers
 oleg_lecturer = Lecturer('Олег', 'Темнов', 'Мужчина')
@@ -150,11 +134,11 @@ oleg_lecturer.courses_attached += ['Git', 'Python']
 dima_lecturer.courses_attached += ['Python']
 
 # The reviewer gives a grade to the student
-maxim_reviewer.rate_student(evelina_sokolova, 'Основы Python', [10, 10])
-maxim_reviewer.rate_student(evelina_sokolova, 'Git', [8, 7])
+# (Each element in the list, which is passed as a grade parameter, represents the grade for a
+# single lesson)
+garik_reviewer.rate_student(evelina_sokolova, 'Git', [8, 7])
 maxim_reviewer.rate_student(evelina_sokolova, 'Python', [10, 10, 8])
-maxim_reviewer.rate_student(sergey_makarov, 'Основы Python', [9, 10])
-maxim_reviewer.rate_student(sergey_makarov, 'Git', [6, 8])
+garik_reviewer.rate_student(sergey_makarov, 'Git', [6, 8])
 maxim_reviewer.rate_student(sergey_makarov, 'Python', [9, 10, 7])
 
 # A student gives a grade to the lecture for a course

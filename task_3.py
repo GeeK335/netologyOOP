@@ -6,7 +6,7 @@ class PersonalInfo:
         self.gender = gender
 
 
-class AverageRating:
+class MathMethods:
     def average(self, grades: list):
         # Check if the lecturer has grades
         if len(list(grades)):
@@ -18,13 +18,34 @@ class AverageRating:
             return 'Еще нет оценок'
 
 
+class CompareTwoPeople:
+    def compare(self, second):
+        lector_info = [
+            f'{self.name} {self.surname}',
+            f'{second.name} {second.surname}',
+            self.average_value,
+            second.average_value
+        ]
+        if lector_info[2] > lector_info[3]:
+            text = f'— результативнее {lector_info[1]}. Cредняя оценка за лекции составляет:'
+            return f'{lector_info[0]} {text} {lector_info[2]}'
+        elif lector_info[2] < lector_info[3]:
+            text = f'— результативнее {lector_info[0]}. Cредняя оценка за лекции составляет:'
+            return f'{lector_info[1]} {text} {lector_info[3]}'
+        else:
+            text = (f'{lector_info[0]} и {lector_info[1]} одинаково результативны. Их балл '
+                    f'составляет: {lector_info[3]}')
+            return f'Лекторы {text}'
+
+
 # Student's Class
-class Student(PersonalInfo, AverageRating):
+class Student(PersonalInfo, MathMethods, CompareTwoPeople):
     def __init__(self, name: str, surname: str, gender: str):
         super().__init__(name, surname, gender)
         self.finished_courses = []
         self.courses_in_progress = []
-        self.grades = {}
+        self.grades = dict()
+        self.average_value: int
 
     def rate_lecturer(self, lecturer, course, grade):
         """
@@ -43,10 +64,10 @@ class Student(PersonalInfo, AverageRating):
             return 'Ошибка'
 
     def __str__(self) -> str:
-        average = super().average(list(self.grades.values()))
+        self.average_value = self.average(list(self.grades.values()))
         name = f'Имя: {self.name}'
         surname = f'Фамилия: {self.surname}'
-        average_rate = f'Средняя оценка за лекции: {average}'
+        average_rate = f'Средняя оценка за лекции: {self.average_value}'
         courses_in_progress = f'Курсы в процессе изучения: {', '.join(self.courses_in_progress)}'
         courses_finished = f'Завершенные курсы: {', '.join(self.finished_courses)}'
         return f'{name}\n{surname}\n{average_rate}\n{courses_in_progress}\n{courses_finished}'
@@ -60,14 +81,34 @@ class Mentor(PersonalInfo):
 
 
 # Lecturers class
-class Lecturer(Mentor, AverageRating):
+class Lecturer(Mentor, MathMethods, CompareTwoPeople):
     def __init__(self, name, surname, gender):
         super().__init__(name, surname, gender)
-        self.grades = {}
+        self.grades = dict()
+        self.average_value: int
 
     def __str__(self) -> str:
-        average = super().average(list(self.grades.values()))
-        return f'Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за лекции: {average}'
+        self.average_value = self.average(list(self.grades.values()))
+        return (f'Имя: {self.name}\nФамилия: {self.surname}\n'
+                f'Средняя оценка за лекции: {self.average_value}')
+
+    # def compare(self, second):
+    #     lector_info = [
+    #         f'{self.name} {self.surname}',
+    #         f'{second.name} {second.surname}',
+    #         self.average_value,
+    #         second.average_value
+    #     ]
+    #     if lector_info[2] > lector_info[3]:
+    #         text = f'— результативнее {lector_info[1]}. Его средняя оценка за лекции составляет:'
+    #         return f'Лектор {lector_info[0]} {text} {lector_info[2]}'
+    #     elif lector_info[2] < lector_info[3]:
+    #         text = f'— результативнее {lector_info[0]}. Его средняя оценка за лекции составляет:'
+    #         return f'Лектор {lector_info[1]} {text} {lector_info[3]}'
+    #     else:
+    #         text = (f'{lector_info[0]} и {lector_info[1]} одинаково результативны. Их балл '
+    #                 f'составляет: {lector_info[3]}')
+    #         return f'Лекторы {text}'
 
 
 # Reviewers class
@@ -134,3 +175,7 @@ print('', '— 1 Lecturer —', oleg_lecturer, sep='\n')
 print('', '— 2 Lecturer —', dima_lecturer, sep='\n')
 print('', '— 1 Student —', evelina_sokolova, sep='\n')
 print('', '— 2 Student —', sergey_makarov, sep='\n')
+
+print('', 'Задача: Сравнение лекторов и студентов', sep='\n')
+print(oleg_lecturer.compare(dima_lecturer))
+print(evelina_sokolova.compare(sergey_makarov))

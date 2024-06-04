@@ -33,11 +33,12 @@ class MathMethods:
         Returns:
             float: The average grade rounded to one decimal place.
         """
-        if grades:
-            merged_list: list = [el for lists in grades for el in lists]
-            return round(sum(merged_list) / len(merged_list), 1)
-        else:
+        if not grades:
             return 'Еще нет оценок'
+
+        # Merging lists if they contain lists
+        merged_list = [el for sublist in grades for el in (sublist if isinstance(sublist, list) else [sublist])]
+        return round(sum(merged_list) / len(merged_list), 1)
 
 
 # Student's Class
@@ -121,10 +122,7 @@ class Student(PersonalInfo, MathMethods):
         """
         if (isinstance(lecturer, Lecturer) and course in lecturer.courses_attached and course in
                 self.courses_in_progress):
-            if course in lecturer.grades:
-                lecturer.grades[course] += [grade]
-            else:
-                lecturer.grades[course] = [grade]
+            lecturer.grades.setdefault(course, []).append(grade)
         else:
             return 'Ошибка'
 
@@ -180,10 +178,7 @@ class Reviewer(Mentor):
     def rate_student(self, student, course, grade):
         if (isinstance(student, Student) and course in student.courses_in_progress and course in
                 self.courses_attached):
-            if course in student.grades:
-                student.grades[course] += [i for i in grade]
-            else:
-                student.grades[course] = [i for i in grade]
+            student.grades.setdefault(course, []).extend(grade)
         else:
             return 'Ошибка'
 
@@ -261,10 +256,9 @@ def count_unique_keys(dicts):
     unique keys from all dictionaries in the input list and the values are the number of times
     each key appears across all dictionaries.
     """
-
     keys_number = {}
-    for dict_ in dicts:
-        for key in dict_:
+    for dictionary in dicts:
+        for key in dictionary:
             keys_number[key] = keys_number.get(key, 0) + 1
     return keys_number
 

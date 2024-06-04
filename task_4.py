@@ -1,126 +1,194 @@
 # Helper classes
 class PersonalInfo:
-	"""
-	A class to represent personal information of an individual.
+    """
+    A class to represent personal information of an individual.
 
-	Attributes:
-		name (str): The first name of the individual.
-		surname (str): The last name of the individual.
-		gender (str): The gender of the individual.
-	"""
-	def __init__(self, name: str, surname: str, gender: str):
-		self.name = name
-		self.surname = surname
-		self.gender = gender
+    Attributes:
+        name (str): The first name of the individual.
+        surname (str): The last name of the individual.
+        gender (str): The gender of the individual.
+
+    __init__ Raises:
+        ValueError: If name, surname, or gender are empty strings.
+    """
+
+    def __init__(self, name: str, surname: str, gender: str):
+        if not name or not surname or not gender:
+            raise ValueError('Name, surname, and gender must be non-empty strings.')
+
+        self.name: str = name.strip()
+        self.surname: str = surname.strip()
+        self.fullname: str = f'{name.strip()} {surname.strip()}'
+        self.gender: str = gender.strip()
 
 
 class MathMethods:
-	def average(self, grades: list):
-		"""
-		Calculate the average grade from a list of grades.
+    def average(self, grades: list):
+        """
+        Calculate the average grade from a list of grades.
 
-		Args:
-			grades (list): A list of grades for a student.
+        Args:
+            grades (list): A list of grades for a student.
 
-		Returns:
-			float: The average grade rounded to one decimal place.
-		"""
-		if grades:
-			merged_list = [el for lists in grades for el in lists]
-			return round(sum(merged_list) / len(merged_list), 1)
-		else:
-			return 'Еще нет оценок'
-
-
-class CompareTwoPeople:
-	def compare(self, second):
-		lector_info = [
-			f'{self.name} {self.surname}',
-			f'{second.name} {second.surname}',
-			self.average_value,
-			second.average_value
-		]
-		if lector_info[2] > lector_info[3]:
-			text = f'— результативнее {lector_info[1]}. Cредняя оценка за лекции составляет:'
-			return f'{lector_info[0]} {text} {lector_info[2]}'
-		elif lector_info[2] < lector_info[3]:
-			text = f'— результативнее {lector_info[0]}. Cредняя оценка за лекции составляет:'
-			return f'{lector_info[1]} {text} {lector_info[3]}'
-		else:
-			text = (f'{lector_info[0]} и {lector_info[1]} одинаково результативны. Их балл '
-					f'составляет: {lector_info[3]}')
-			return f'Лекторы {text}'
+        Returns:
+            float: The average grade rounded to one decimal place.
+        """
+        if grades:
+            merged_list: list = [el for lists in grades for el in lists]
+            return round(sum(merged_list) / len(merged_list), 1)
+        else:
+            return 'Еще нет оценок'
 
 
 # Student's Class
-class Student(PersonalInfo, MathMethods, CompareTwoPeople):
-	def __init__(self, name: str, surname: str, gender: str):
-		super().__init__(name, surname, gender)
-		self.finished_courses = []
-		self.courses_in_progress = []
-		self.grades = dict()
-		self.average_value: int
+class Student(PersonalInfo, MathMethods):
+    """
+    A class to represent a student with personal information, grades, courses in progress,
+    and finished courses.
 
-	def rate_lecturer(self, lecturer, course, grade):
-		"""
-		:param lecturer: «Lecturer whose work must be evaluated by the student»
-		:param course: «Course assigned to the selected lecturer»
-		:param grade: «The grade given by the student to the selected lecturer for this course»
-		:return: «Completed dictionary attribute for the Lecturer class»
-		"""
-		if (isinstance(lecturer, Lecturer) and course in lecturer.courses_attached and course in
-				self.courses_in_progress):
-			if course in lecturer.grades:
-				lecturer.grades[course] += [grade]
-			else:
-				lecturer.grades[course] = [grade]
-		else:
-			return 'Ошибка'
+    Attributes:
+        name (str): The first name of the student.
+        surname (str): The last name of the student.
+        gender (str): The gender of the student.
+        finished_courses (list): List of courses finished by the student.
+        courses_in_progress (list): List of courses currently in progress for the student.
+        grades (dict): Dictionary containing grades for different courses.
+        average_value (int): The average grade of the student.
 
-	def __str__(self) -> str:
-		self.average_value = self.average(list(self.grades.values()))
-		name = f'Имя: {self.name}'
-		surname = f'Фамилия: {self.surname}'
-		average_rate = f'Средняя оценка за лекции: {self.average_value}'
-		courses_in_progress = f'Курсы в процессе изучения: {', '.join(self.courses_in_progress)}'
-		courses_finished = f'Завершенные курсы: {', '.join(self.finished_courses)}'
-		return f'{name}\n{surname}\n{average_rate}\n{courses_in_progress}\n{courses_finished}'
+    Methods:
+        __str__(self) -> str: Return a formatted string with the student's personal information,
+        average grade, courses in progress, and finished courses.
+        __gt__(self, second) -> bool: Compare the average grades of two students and return True
+        if the current student has a higher average grade.
+        __eq__(self, second) -> bool: Compare the average grades of two students and return True
+        if they are equal.
+        rate_lecturer(self, lecturer, course, grade) -> dict: Rate a lecturer for a specific
+        course and update the lecturer's grades dictionary.
+    """
+
+    def __init__(self, name: str, surname: str, gender: str):
+        super().__init__(name, surname, gender)
+        self.finished_courses = []
+        self.courses_in_progress = []
+        self.grades = dict()
+        self.average_value: int
+
+    def __str__(self) -> str:
+        """
+        Return a formatted string with the student's personal information, average grade,
+        courses in progress, and finished courses.
+        """
+        self.average_value = self.average(list(self.grades.values()))
+        name = f'Имя: {self.name}'
+        surname = f'Фамилия: {self.surname}'
+        average_rate = f'Средняя оценка за лекции: {self.average_value}'
+        courses_in_progress = f'Курсы в процессе изучения: {', '.join(self.courses_in_progress)}'
+        courses_finished = f'Завершенные курсы: {', '.join(self.finished_courses)}'
+        return f'{name}\n{surname}\n{average_rate}\n{courses_in_progress}\n{courses_finished}'
+
+    def __gt__(self, other) -> str:
+        if None in (self.average_value, other.average_value):
+            raise ValueError('Average grades are not calculated properly.')
+        if not isinstance(other, Student):
+            raise ValueError('Comparison can only be done between two Student instances.')
+
+        self_more: str = (f'{self.fullname}({self.average_value}) результативнее '
+                          f'{other.fullname}({other.average_value})')
+        second_more: str = (f'{other.fullname}({other.average_value}) результативнее '
+                            f'{self.fullname}({self.average_value}).')
+
+        return self_more if self.average_value > other.average_value else second_more
+
+    def __eq__(self, other) -> str:
+        if None in (self.average_value, other.average_value):
+            raise ValueError('Average grades are not calculated properly.')
+        if not isinstance(other, Student):
+            raise ValueError('Comparison can only be done between two Student instances.')
+
+        equality: str = (f'{self.fullname} и {other.fullname} одинаково результативны. Их средняя '
+                         f'оценка за лекции составляет: {self.average_value}')
+        inequality: str = (f'{self.fullname}({self.average_value}) и {other.fullname}'
+                           f'({other.average_value}) не одинаково результативны.')
+
+        return equality if self.average_value == other.average_value else inequality
+
+    def rate_lecturer(self, lecturer, course, grade):
+        """
+        :param lecturer: «Lecturer whose work must be evaluated by the student»
+        :param course: «Course assigned to the selected lecturer»
+        :param grade: «The grade given by the student to the selected lecturer for this course»
+        :return: «Completed dictionary attribute for the Lecturer class»
+        """
+        if (isinstance(lecturer, Lecturer) and course in lecturer.courses_attached and course in
+                self.courses_in_progress):
+            if course in lecturer.grades:
+                lecturer.grades[course] += [grade]
+            else:
+                lecturer.grades[course] = [grade]
+        else:
+            return 'Ошибка'
 
 
 # Parent class
 class Mentor(PersonalInfo):
-	def __init__(self, name, surname, gender):
-		super().__init__(name, surname, gender)
-		self.courses_attached = []
+    def __init__(self, name, surname, gender):
+        super().__init__(name, surname, gender)
+        self.courses_attached = []
 
 
 # Lecturers class
-class Lecturer(Mentor, MathMethods, CompareTwoPeople):
-	def __init__(self, name, surname, gender):
-		super().__init__(name, surname, gender)
-		self.grades = dict()
-		self.average_value: int
+class Lecturer(Mentor, MathMethods):
+    def __init__(self, name, surname, gender):
+        super().__init__(name, surname, gender)
+        self.grades = dict()
+        self.average_value: int
 
-	def __str__(self) -> str:
-		self.average_value = self.average(list(self.grades.values()))
-		return (f'Имя: {self.name}\nФамилия: {self.surname}\n'
-				f'Средняя оценка за лекции: {self.average_value}')
+    def __str__(self) -> str:
+        self.average_value = self.average(list(self.grades.values()))
+        return (f'Имя: {self.name}\nФамилия: {self.surname}\n'
+                f'Средняя оценка за лекции: {self.average_value}')
+
+    def __gt__(self, other) -> str:
+        if None in (self.average_value, other.average_value):
+            raise ValueError('Average grades are not calculated properly.')
+        if not isinstance(other, Lecturer):
+            raise ValueError('Comparison can only be done between two Student instances.')
+
+        self_more = (f'{self.fullname}({self.average_value}) результативнее {other.fullname}'
+					 f'({other.average_value})')
+        second_more = (f'{other.fullname}({other.average_value}) результативнее {self.fullname}'
+					   f'({self.average_value}).')
+
+        return self_more if self.average_value > other.average_value else second_more
+
+    def __eq__(self, other) -> str:
+        if None in (self.average_value, other.average_value):
+            raise ValueError('Average grades are not calculated properly.')
+        if not isinstance(other, Lecturer):
+            raise ValueError('Comparison can only be done between two Student instances.')
+
+        equality = (f'{self.fullname} и {other.fullname} одинаково результативны. Их средняя '
+					f'оценка за лекции составляет: {self.average_value}')
+        inequality = (f'{self.fullname}({self.average_value}) и {other.fullname}'
+					  f'({other.average_value}) не одинаково результативны.')
+
+        return equality if self.average_value == other.average_value else inequality
 
 
 # Reviewers class
 class Reviewer(Mentor):
-	def rate_student(self, student, course, grade):
-		if (isinstance(student, Student) and course in student.courses_in_progress and course in
-				self.courses_attached):
-			if course in student.grades:
-				student.grades[course] += [i for i in grade]
-			else:
-				student.grades[course] = [i for i in grade]
-		else:
-			return 'Ошибка'
+    def rate_student(self, student, course, grade):
+        if (isinstance(student, Student) and course in student.courses_in_progress and course in
+                self.courses_attached):
+            if course in student.grades:
+                student.grades[course] += [i for i in grade]
+            else:
+                student.grades[course] = [i for i in grade]
+        else:
+            return 'Ошибка'
 
-	def __str__(self) -> str:
-		return f'Имя: {self.name}\nФамилия: {self.surname}'
+    def __str__(self) -> str:
+        return f'Имя: {self.name}\nФамилия: {self.surname}'
 
 
 # Students
@@ -178,56 +246,60 @@ print('', '— 1 Student —', evelina_sokolova, sep='\n')
 print('', '— 2 Student —', sergey_makarov, sep='\n')
 
 print('', '#2 Реализуйте возможность сравнивать', sep='\n')
-print(oleg_lecturer.compare(dima_lecturer))
-print(evelina_sokolova.compare(sergey_makarov))
+print('- Students')
+print(evelina_sokolova > sergey_makarov)
+print(evelina_sokolova == sergey_makarov)
+print('- Lecturers')
+print(oleg_lecturer > dima_lecturer)
+print(oleg_lecturer == dima_lecturer)
 
 
 # Counting duplicate keys in different dictionaries
 def count_unique_keys(dicts):
-	"""
-	A function that takes a list of dictionaries and returns a dictionary where the keys are
-	unique keys from all dictionaries in the input list and the values are the number of times
-	each key appears across all dictionaries.
-	"""
+    """
+    A function that takes a list of dictionaries and returns a dictionary where the keys are
+    unique keys from all dictionaries in the input list and the values are the number of times
+    each key appears across all dictionaries.
+    """
 
-	keys_number = {}
-	for dict_ in dicts:
-		for key in dict_:
-			keys_number[key] = keys_number.get(key, 0) + 1
-	return keys_number
+    keys_number = {}
+    for dict_ in dicts:
+        for key in dict_:
+            keys_number[key] = keys_number.get(key, 0) + 1
+    return keys_number
 
 
 # Calculating the average grade for homework for all students in a particular course
 def average_rating(course_name: str, *role):
-	"""
-	Calculate the average rating for a specific course from multiple dictionaries.
+    """
+    Calculate the average rating for a specific course from multiple dictionaries.
 
-	Parameters:
-	- course_name (str): The name of the course for which the average rating is calculated.
-	- *role (dict): Variable number of dictionaries containing course ratings.
+    Parameters:
+    - course_name (str): The name of the course for which the average rating is calculated.
+    - *role (dict): Variable number of dictionaries containing course ratings.
 
-	Returns:
-	- float: The average rating for the specified course across all dictionaries.
+    Returns:
+    - float: The average rating for the specified course across all dictionaries.
 
-	Example:
-	average_rating('Math', {'Math': [4, 5, 3]}, {'Math': [2, 4, 3]})
-	"""
-	# The number of keys in the dictionary
-	keys = count_unique_keys(role)
-	combined_grades = []
-	#
-	if keys[course_name] > 1:
-		# If there are more than one identical key, we will add the values
-		# associated with those keys to a common list.
-		for i in range(len(role)):
-			combined_grades += role[i][course_name]
-	else:
-		# If the desired key is found in only one dictionary,
-		# we will get its corresponding value
-		for dict_ in role:
-			if course_name in dict_:
-				combined_grades += dict_[course_name]
-	return round(sum(combined_grades) / len(combined_grades), 1)
+    Example:
+    average_rating('Math', {'Math': [4, 5, 3]}, {'Math': [2, 4, 3]})
+    """
+    # The number of keys in the dictionary
+    keys = count_unique_keys(role)
+    combined_grades = []
+    #
+    if keys[course_name] > 1:
+        # If there are more than one identical key, we will add the values
+        # associated with those keys to a common list.
+        for i in range(len(role)):
+            combined_grades += role[i][course_name]
+    else:
+        # If the desired key is found in only one dictionary,
+        # we will get its corresponding value
+        for dict_ in role:
+            if course_name in dict_:
+                combined_grades += dict_[course_name]
+    return round(sum(combined_grades) / len(combined_grades), 1)
 
 
 average_s_text = 'Средняя оценка за домашние задания по всем студентам в рамках конкретного курса:'
@@ -235,5 +307,5 @@ average_l_text = 'Средняя оценка за лекции всех лек�
 
 print('', '= TASK 4 =', sep='\n')
 print(average_s_text,
-	  average_rating('Python', evelina_sokolova.grades, sergey_makarov.grades))
+      average_rating('Python', evelina_sokolova.grades, sergey_makarov.grades))
 print(average_l_text, average_rating('Git', oleg_lecturer.grades, dima_lecturer.grades))
